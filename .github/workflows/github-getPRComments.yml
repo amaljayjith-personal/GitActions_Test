@@ -23,7 +23,7 @@ jobs:
           # Use GitHub API to get all comments for the PR
           curl -H "Authorization: token $GITHUB_TOKEN" \
                -H "Accept: application/vnd.github.v3+json" \
-               "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pull/$PR_NUMBER/comments" \
+               "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls/$PR_NUMBER/comments" \
                -o pr_comments.json
 
       - name: Display PR comments
