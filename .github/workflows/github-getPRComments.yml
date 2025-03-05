@@ -37,7 +37,7 @@ jobs:
           echo "" >> pr_review_comments.md
 
           # Parse the response and format it as Markdown
-          echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position // "N/A")  \n" ' >> pr_review_comments.md
+          echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n" ' >> pr_review_comments.md
 
       - name: Display PR review comments
         run: |
