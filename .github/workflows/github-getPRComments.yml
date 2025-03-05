@@ -47,7 +47,7 @@ jobs:
           cat pr_review_comments.md
 
       - name: Upload formatted PR comments as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: pr-review-comments
           path: pr_review_comments.md
