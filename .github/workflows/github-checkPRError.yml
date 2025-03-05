@@ -27,11 +27,6 @@ jobs:
                             -H "Accept: application/vnd.github.v3+json" \
                             "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls/$PR_NUMBER/comments")
           
-          # Fetch general PR comments (comments on the pull request itself)
-          issue_response=$(curl -s -H "Authorization: token $PERSONAL_ACCESS_TOKEN" \
-                                 -H "Accept: application/vnd.github.v3+json" \
-                                 "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/issues/$PR_NUMBER/comments")
-          
           # Check the response status and output
           echo "API Response: $response"
           
@@ -50,17 +45,6 @@ jobs:
             echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position)  \n" ' >> pr_review_comments.md
           else
             echo "No review comments found for PR #$PR_NUMBER"
-          fi
-
-          # Print General Comments (PR comments)
-          echo "### General Comments" >> pr_comments.md
-          if [[ "$issue_response" != "[]" ]]; then
-            echo "$issue_response" | jq -r '.[] | "- **Commenter**: \(.user.login)  
-              \n  **Comment**: \(.body)  
-              \n  **Created at**: \(.created_at)  
-              \n" ' >> pr_comments.md
-          else
-            echo "No general comments found for PR #$PR_NUMBER" >> pr_comments.md
           fi
 
       - name: Display PR review comments md
