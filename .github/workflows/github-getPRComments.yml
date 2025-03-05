@@ -28,6 +28,26 @@ jobs:
                "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls/$PR_NUMBER/comments" \
                -o pr_comments.json
 
+          # Prepare Markdown CV
+          echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
+          echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
+          echo "### Review Comments" >> pr_review_comments.md
+          echo "" >> pr_review_comments.md
+
+          # Parse the response and format it as Markdown
+          echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login) \n  **Comment**: \(.body)\n  **File**: \(.path)\n  **Line**: \(.position)\n  ' >> pr_review_comments.md
+
+
       - name: Display PR comments
         run: |
           cat pr_comments.json
+
+      - name: Display PR review comments
+        run: |
+          cat pr_review_comments.md
+
+      - name: Upload formatted PR comments as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-review-comments
+          path: pr_review_comments.md
