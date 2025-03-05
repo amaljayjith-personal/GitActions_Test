@@ -54,3 +54,9 @@ jobs:
       - name: Display PR review comments json
         run: |
           cat pr_review_comments.json
+
+      - name: Upload formatted PR comments as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-review-comments
+          path: pr_review_comments.md
