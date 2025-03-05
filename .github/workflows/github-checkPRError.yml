@@ -33,6 +33,24 @@ jobs:
           # Save the review comments to a file
           echo $response > pr_review_comments.json
 
-      - name: Display PR review comments
+          # Check if the response has data and create the markdown file only if there are comments
+          if [[ "$response" != "[]" ]]; then
+            # Prepare Markdown CV
+            echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
+            echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
+            echo "### Review Comments" >> pr_review_comments.md
+            echo "" >> pr_review_comments.md
+
+            # Parse the response and format it as Markdown
+            echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position)  \n" ' >> pr_review_comments.md
+          else
+            echo "No review comments found for PR #$PR_NUMBER"
+          fi
+
+      - name: Display PR review comments md
+        run: |
+          cat pr_review_comments.md
+
+      - name: Display PR review comments json
         run: |
           cat pr_review_comments.json
