@@ -31,10 +31,10 @@ jobs:
           echo "API Response: $response"
           
           # Prepare Markdown CV
-          # echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
-          # echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
-          # echo "### Review Comments" >> pr_review_comments.md
-          # echo "" >> pr_review_comments.md
+          echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
+          echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
+          echo "### Review Comments" >> pr_review_comments.md
+          echo "" >> pr_review_comments.md
 
           # Parse the response and format it as Markdown
           # echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position)  \n" ' >> pr_review_comments.md
