@@ -27,29 +27,24 @@ jobs:
                             -H "Accept: application/vnd.github.v3+json" \
                             "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls/$PR_NUMBER/comments")
           
-          # Debug: Output the raw API response to the logs
-          echo "Raw API Response: $response"
+          # Check the response status and output
+          echo "API Response: $response"
           
-          # Check if the response has data and create the markdown file only if there are comments
-          if [[ "$response" != "[]" ]]; then
-            # Prepare Markdown CV
-            echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
-            echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
-            echo "### Review Comments" >> pr_review_comments.md
-            echo "" >> pr_review_comments.md
+          # Prepare Markdown CV
+          echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
+          echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
+          echo "### Review Comments" >> pr_review_comments.md
+          echo "" >> pr_review_comments.md
 
-            # Parse the response and format it as Markdown
-            echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position)  \n" ' >> pr_review_comments.md
-          else
-            echo "No review comments found for PR #$PR_NUMBER"
-          fi
+          # Parse the response and format it as Markdown
+          echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position)  \n" ' >> pr_review_comments.md
 
       - name: Display PR review comments
         run: |
           cat pr_review_comments.md
 
       - name: Upload formatted PR comments as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: pr-review-comments
           path: pr_review_comments.md
