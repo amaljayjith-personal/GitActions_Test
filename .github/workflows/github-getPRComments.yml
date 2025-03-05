@@ -3,6 +3,8 @@ name: Get PR Comments
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
 
 jobs:
   fetch-comments:
