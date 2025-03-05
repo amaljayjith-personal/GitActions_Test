@@ -37,7 +37,9 @@ jobs:
           echo "" >> pr_review_comments.md
 
           # Parse the response and format it as Markdown
-          echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n" ' >> pr_review_comments.md
+          # echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n" ' >> pr_review_comments.md
+          echo "Raw API Response:"
+          echo "$response"  # This will print the raw JSON response to GitHub Actions logs
 
       - name: Display PR review comments
         run: |
