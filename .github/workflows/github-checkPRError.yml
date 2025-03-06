@@ -1,0 +1,62 @@
+name: Get PR Review Comments
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+
+jobs:
+  fetch-pr-comments:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get PR review comments
+        run: |
+          # Define variables
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          REPO_OWNER=${{ github.repository_owner }}
+          REPO_NAME=${{ github.event.repository.name }}
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          
+          # Use GitHub API to get all review comments for the PR
+          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/pulls/$PR_NUMBER/comments")
+          
+          # Check the response status and output
+          echo "API Response: $response"
+          
+          # Save the review comments to a file
+          echo $response > pr_review_comments.json
+
+          # Check if the response has data and create the markdown file only if there are comments
+          if [[ "$response" != "[]" ]]; then
+            # Prepare Markdown CV
+            echo "# PR Review Comments for PR #$PR_NUMBER" > pr_review_comments.md
+            echo "Repository: $REPO_OWNER/$REPO_NAME" >> pr_review_comments.md
+            echo "### Review Comments" >> pr_review_comments.md
+            echo "" >> pr_review_comments.md
+
+            # Parse the response and format it as Markdown
+            echo "$response" | jq -r '.[] | "- **Commenter**: \(.user.login)  \n  **Comment**: \(.body)  \n  **File**: \(.path)  \n  **Line**: \(.position)  \n" ' >> pr_review_comments.md
+          else
+            echo "No review comments found for PR #$PR_NUMBER"
+          fi
+
+      - name: Display PR review comments md
+        run: |
+          cat pr_review_comments.md
+
+      - name: Display PR review comments json
+        run: |
+          cat pr_review_comments.json
+
+      - name: Upload formatted PR comments as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-review-comments
+          path: pr_review_comments.md
